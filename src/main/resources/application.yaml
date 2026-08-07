@@ -1,3 +1,19 @@
 spring:
   application:
     name: StudySlot
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/studyslot?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: studyslot
+    password: vmflwma1!
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+
+kakao:
+  rest-api-key: ${KAKAO_REST_API_KEY}
