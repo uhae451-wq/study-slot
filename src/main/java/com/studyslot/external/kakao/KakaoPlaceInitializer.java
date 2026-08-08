@@ -1,24 +1,21 @@
 package com.studyslot.external.kakao;
 
+import com.studyslot.space.service.SpaceImportService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 @Component
 public class KakaoPlaceInitializer implements CommandLineRunner {
 
-    private final KakaoLocalClient kakaoLocalClient;
+    private final SpaceImportService spaceImportService;
 
-    public KakaoPlaceInitializer(KakaoLocalClient kakaoLocalClient) {
-        this.kakaoLocalClient = kakaoLocalClient;
+    public KakaoPlaceInitializer(SpaceImportService spaceImportService) {
+        this.spaceImportService = spaceImportService;
     }
 
     @Override
     public void run(String... args) {
-        KakaoPlaceSearchResponse result =
-                kakaoLocalClient.search("강남 스터디카페");
+        spaceImportService.importInitialSpaces();
 
-        result.documents().forEach(place ->
-                System.out.println(place.placeName())
-        );
     }
 }
