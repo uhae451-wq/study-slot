@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>StudySlot - 내 정보</title>
+</head>
+
+<body>
+
+<h1>StudySlot</h1>
+
+<h2 th:text="${nickname} + '님 환영합니다!'"></h2>
+
+<p th:text="'이메일: ' + ${email}"></p>
+
+</body>
+</html>

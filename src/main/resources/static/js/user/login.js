@@ -35,12 +35,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            // 로그인 성공 -> 토큰을 저장해두고 다음 요청부터 사용
+/*            // 로그인 성공 -> 토큰을 저장해두고 다음 요청부터 사용
             localStorage.setItem("token", data.token);
-            localStorage.setItem("nickname", data.nickname);
+            localStorage.setItem("nickname", data.nickname);*/
 
             alert(`${data.nickname}님 환영합니다!`);
-            window.location.href = "/";   // 로그인 후 이동할 페이지 (아직 없으면 우선 홈으로)
+            window.location.href = data.redirectUrl;
 
         } catch (err) {
             errorEl.textContent = "서버와 통신 중 문제가 발생했어요.";

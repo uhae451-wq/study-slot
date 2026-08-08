@@ -1,24 +1,31 @@
 package com.studyslot.user.controller;
 
+import com.studyslot.common.jwt.JwtTokenProvider;
+import com.studyslot.user.dto.LoginRequest;
+import com.studyslot.user.entity.User;
+import com.studyslot.user.repository.UserRepository;
 import com.studyslot.user.service.UserService;
 import com.studyslot.user.dto.UserSignupRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/user")
 public class UserController {
-
+    private final UserRepository userRepository;
     private final UserService userService;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    public UserController(UserService userService){
+    public UserController(UserRepository userRepository, UserService userService, JwtTokenProvider jwtTokenProvider){
+        this.userRepository = userRepository;
+        this.jwtTokenProvider = jwtTokenProvider;
         this.userService = userService;
     }
 
@@ -53,5 +60,40 @@ public class UserController {
     public String userLoginForm(){
         return "/user/login";
     }
+
+
+    @GetMapping("/me")
+    public String me(
+            @CookieValue(value = "accessToken", required = false) String token,
+            Model model
+    ) {
+
+        if (token == null) {
+            return "redirect:/user/login";
+        }
+
+        try {
+            // JWT 검증 + userId 추출
+            Long userId = jwtTokenProvider.getUserId(token);
+
+            // DB에서 사용자 조회
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() ->
+                            new IllegalArgumentException("사용자를 찾을 수 없습니다.")
+                    );
+
+            model.addAttribute("email", user.getEmail());
+            model.addAttribute("nickname", user.getNickname());
+
+            return "user/me";
+
+        } catch (Exception e) {
+
+            // JWT가 잘못됐거나 만료된 경우
+            return "redirect:/user/login";
+        }
+    }
+
+
 
 }
