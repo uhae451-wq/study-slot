@@ -2,6 +2,7 @@ package com.studyslot.user.service;
 
 import com.studyslot.common.SecurityConfig;
 import com.studyslot.user.dto.LoginRequest;
+import com.studyslot.user.dto.UserEditRequest;
 import com.studyslot.user.dto.UserSignupRequest;
 import com.studyslot.user.entity.User;
 import com.studyslot.user.repository.UserRepository;
@@ -71,6 +72,57 @@ public class UserService {
         }
 
         return user;
+    }
+
+    // 회원정보 수정 (닉네임 + 비밀번호)
+    @Transactional
+    public void editUser(Long userId, UserEditRequest request) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // 닉네임 변경 (값이 있고, 기존과 다를 때만)
+        if (!StringUtils.hasText(request.getNickname())) {
+            throw new IllegalArgumentException("닉네임은 필수 입니다.");
+        }
+
+        if (!request.getNickname().equals(user.getNickname())) {
+            if (userRepository.existsByNickname(request.getNickname())) {
+                throw new IllegalAccessError("이미 사용 중인 닉네임이에요.");
+            }
+            user.changeNickname(request.getNickname());
+        }
+
+        // 비밀번호 변경 (둘 중 하나라도 입력했을 때만 검증 진입)
+        boolean wantsPasswordChange =
+                StringUtils.hasText(request.getNewPassword()) ||
+                        StringUtils.hasText(request.getNewPasswordConfirm());
+
+        if (wantsPasswordChange) {
+            if (!StringUtils.hasText(request.getNewPassword()) ||
+                    !StringUtils.hasText(request.getNewPasswordConfirm())) {
+                throw new IllegalArgumentException("비밀번호를 모두 입력해주세요.");
+            }
+
+            if (!request.getNewPassword().matches("^(?=.*[A-Za-z])(?=.*\\d).{8,20}$")) {
+                throw new IllegalArgumentException("비밀번호는 영문과 숫자를 포함한 8~20자로 입력해주세요.");
+            }
+
+            if (!request.getNewPassword().equals(request.getNewPasswordConfirm())) {
+                throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            }
+
+            user.changePassword(passwordEncoder.encode(request.getNewPassword()));
+        }
+    }
+
+    @Transactional
+    public void changePassword(Long userId, String newPassword) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        String encodedPassword = passwordEncoder.encode(newPassword);
+
+        user.changePassword(encodedPassword);
     }
 
 }

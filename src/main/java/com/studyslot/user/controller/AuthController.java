@@ -51,7 +51,6 @@ public class AuthController {
                     .build();
 
             response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-            System.out.println("====================================="+redirect);
             String redirectUrl = isSafeRedirect(redirect) ? redirect : "/";
 
             return ResponseEntity.ok(Map.of("redirectUrl", redirectUrl));
