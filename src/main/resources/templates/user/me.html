@@ -9,9 +9,8 @@
 
 <h1>StudySlot</h1>
 
-<h2 th:text="${nickname} + '님 환영합니다!'"></h2>
-
-<p th:text="'이메일: ' + ${email}"></p>
+<span th:text="${loginUser.email}"></span>
+<span th:text="${loginUser.nickname}"></span>
 
 </body>
 </html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>스터디 공간 목록</title>
+    <link rel="stylesheet" th:href="@{/css/space/space.css}">
+</head>
+<body>
+
+<div class="page-header">
+    <p class="eyebrow">Study Slot · Archive</p>
+    <h1>스터디 공간 목록</h1>
+    <p class="count" id="count-text">불러오는 중...</p>
+</div>
+
+<div id="space-list"></div>
+
+<script th:src="@{/js/space/space-list.js}"></script>
+</body>
+</html>

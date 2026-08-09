@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -64,34 +65,17 @@ public class UserController {
 
     @GetMapping("/me")
     public String me(
-            @CookieValue(value = "accessToken", required = false) String token,
+            @AuthenticationPrincipal Long userId,
             Model model
     ) {
-
-        if (token == null) {
+        // 필터에서 토큰 검증을 이미 했기 때문에, userId가 null이면 = 인증 안 된 상태
+        if (userId == null) {
             return "redirect:/user/login";
         }
-
-        try {
-            // JWT 검증 + userId 추출
-            Long userId = jwtTokenProvider.getUserId(token);
-
-            // DB에서 사용자 조회
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() ->
-                            new IllegalArgumentException("사용자를 찾을 수 없습니다.")
-                    );
-
-            model.addAttribute("email", user.getEmail());
-            model.addAttribute("nickname", user.getNickname());
-
-            return "user/me";
-
-        } catch (Exception e) {
-
-            // JWT가 잘못됐거나 만료된 경우
-            return "redirect:/user/login";
-        }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        model.addAttribute("loginUser", user);
+        return "user/me";
     }
 
 
