@@ -13,6 +13,7 @@
   <p class="error-msg" id="login-error"></p>
 
   <form id="login-form" autocomplete="off">
+    <input type="hidden" id="redirect" th:value="${redirect}">
     <div class="field">
       <label for="email">이메일</label>
       <input type="email" id="email" placeholder="you@example.com" autocomplete="off">

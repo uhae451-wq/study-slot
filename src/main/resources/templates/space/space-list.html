@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>스터디 공간 목록</title>
+    <link rel="stylesheet" th:href="@{/css/header.css}">
     <link rel="stylesheet" th:href="@{/css/space/space.css}">
 </head>
 <body>
+
+<div th:replace="~{fragments/header :: header}"></div>
 
 <div class="page-header">
     <p class="eyebrow">Study Slot · Archive</p>

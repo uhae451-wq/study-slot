@@ -10,10 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -33,6 +30,7 @@ public class AuthController {
     public ResponseEntity<?> login(
             @Valid @RequestBody LoginRequest loginRequest,
             BindingResult bindingResult,
+            @RequestParam(required = false) String redirect,
             HttpServletResponse response
     ) {
         if (bindingResult.hasErrors()) {
@@ -43,27 +41,29 @@ public class AuthController {
         try {
             User user = userService.login(loginRequest);
             String token = jwtTokenProvider.createToken(user.getId(), user.getEmail());
-            System.out.println("발급된 토큰: " + token);   // 임시 디버깅용
+
             ResponseCookie cookie = ResponseCookie.from("accessToken", token)
                     .httpOnly(true)
-                    .secure(false) // localhost 개발 환경
+                    .secure(false)
                     .path("/")
                     .maxAge(60 * 60)
                     .sameSite("Lax")
                     .build();
 
-            response.addHeader(
-                    HttpHeaders.SET_COOKIE,
-                    cookie.toString()
-            );
+            response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+            System.out.println("====================================="+redirect);
+            String redirectUrl = isSafeRedirect(redirect) ? redirect : "/";
 
-            return ResponseEntity.ok(
-                    Map.of(
-                            "redirectUrl", "/user/me"
-                    )
-            );
+            return ResponseEntity.ok(Map.of("redirectUrl", redirectUrl));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(401).body(Map.of("message", e.getMessage()));
         }
+    }
+
+    // 외부 사이트로 리다이렉트되는 걸 막기 위한 안전장치 (Open Redirect 방지)
+    private boolean isSafeRedirect(String redirect) {
+        return redirect != null
+                && redirect.startsWith("/")
+                && !redirect.startsWith("//");
     }
 }
