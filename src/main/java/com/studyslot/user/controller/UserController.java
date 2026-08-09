@@ -2,6 +2,7 @@ package com.studyslot.user.controller;
 
 import com.studyslot.common.jwt.JwtTokenProvider;
 import com.studyslot.user.dto.LoginRequest;
+import com.studyslot.user.dto.UserEditRequest;
 import com.studyslot.user.entity.User;
 import com.studyslot.user.repository.UserRepository;
 import com.studyslot.user.service.UserService;
@@ -10,12 +11,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @Controller
 @RequestMapping("/user")
@@ -58,26 +63,57 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public String userLoginForm(){
+    public String userLoginForm(@RequestParam(required = false) String redirect, Model model){
+        model.addAttribute("redirect",redirect);
         return "/user/login";
     }
 
+    @GetMapping("/logout")
+    public String logout(HttpServletResponse response) {
 
-    @GetMapping("/me")
-    public String me(
-            @AuthenticationPrincipal Long userId,
-            Model model
-    ) {
-        // 필터에서 토큰 검증을 이미 했기 때문에, userId가 null이면 = 인증 안 된 상태
-        if (userId == null) {
-            return "redirect:/user/login";
-        }
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-        model.addAttribute("loginUser", user);
-        return "user/me";
+        // 쿠키를 "즉시 만료"시켜서 브라우저가 지우게 만듦
+        ResponseCookie expiredCookie = ResponseCookie.from("accessToken", "")
+                .httpOnly(true)
+                .secure(false) // localhost 개발 환경
+                .path("/")
+                .maxAge(0)     // 0으로 주면 브라우저가 바로 삭제
+                .sameSite("Lax")
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, expiredCookie.toString());
+
+        return "redirect:/space/list";
     }
 
+    @GetMapping("/edit")
+    public String userEdit(@AuthenticationPrincipal Long userId){
+        if (userId == null) {
+
+        }
+        return "/user/mypage";
+    }
+
+    @PostMapping("/edit")
+    @ResponseBody
+    public ResponseEntity<?> userEdit(@AuthenticationPrincipal Long userId,
+                                      @RequestBody UserEditRequest request) {
+
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "로그인이 필요합니다."));
+        }
+
+        try {
+            userService.editUser(userId, request);
+        } catch (IllegalArgumentException | IllegalAccessError e) {
+            return ResponseEntity.badRequest().body(Map.of("message", e.getMessage()));
+        }
+
+        return ResponseEntity.ok(Map.of(
+                "message", "회원정보가 수정되었습니다.",
+                "nickname", request.getNickname()
+        ));
+    }
 
 
 }

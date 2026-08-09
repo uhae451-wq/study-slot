@@ -11,11 +11,13 @@
       </a>
 
       <nav class="nav-links">
+        <a href="/space/list">공간 목록</a>
       </nav>
 
       <div class="auth-area">
         <!-- 로그인 상태: loginUser가 있을 때 -->
         <div th:if="${loginUser != null}" class="auth-user">
+          <span th:onclick="|location.href='@{/user/edit}'|" id="header-nickname" class="user-tag" th:text="${loginUser.nickname} + '님'">닉네임님</span>
           <a href="/user/logout" class="btn-ghost">로그아웃</a>
         </div>
 
