@@ -1,0 +1,118 @@
+.site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    height: 64px;
+    background: var(--paper, #F3EFE6);
+    border-bottom: 2px solid var(--ink, #26241E);
+}
+
+.header-inner {
+    max-width: 960px;
+    height: 100%;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--ink, #26241E);
+}
+
+.brand-mark {
+    color: var(--stamp, #A3402F);
+    font-size: 14px;
+}
+
+.brand-text {
+    font-family: 'Source Serif 4', serif;
+    font-weight: 600;
+    font-size: 19px;
+    letter-spacing: -0.01em;
+}
+
+.nav-links {
+    display: flex;
+    gap: 20px;
+    flex: 1;
+}
+
+.nav-links a {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--ink-soft, #6B6759);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+}
+
+.nav-links a:hover {
+    color: var(--ink, #26241E);
+}
+
+.auth-area {
+    display: flex;
+    align-items: center;
+}
+
+.auth-user,
+.auth-guest {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--ink, #26241E);
+}
+
+.btn-ghost {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--ink-soft, #6B6759);
+    text-decoration: none;
+    padding: 7px 14px;
+    border: 1px solid var(--rule, #D8D2C2);
+    border-radius: 2px;
+    transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.btn-ghost:hover {
+    border-color: var(--ink, #26241E);
+    color: var(--ink, #26241E);
+}
+
+.btn-solid {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--paper, #F3EFE6);
+    background: var(--ink, #26241E);
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 2px;
+    transition: opacity 0.15s ease;
+}
+
+.btn-solid:hover {
+    opacity: 0.8;
+}
+
+/* 헤더가 fixed라서, body 콘텐츠가 헤더 밑에 깔리지 않도록 페이지마다 상단 여백 필요 */
+body {
+    padding-top: 64px;
+}
+
+@media (max-width: 480px) {
+    .nav-links { display: none; }
+    .brand-text { font-size: 17px; }
+}

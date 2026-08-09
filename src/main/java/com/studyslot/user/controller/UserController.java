@@ -58,26 +58,26 @@ public class UserController {
     }
 
     @GetMapping("/login")
-    public String userLoginForm(){
+    public String userLoginForm(@RequestParam(required = false) String redirect, Model model){
+        model.addAttribute("redirect",redirect);
         return "/user/login";
     }
 
+    @GetMapping("/logout")
+    public String logout(HttpServletResponse response) {
 
-    @GetMapping("/me")
-    public String me(
-            @AuthenticationPrincipal Long userId,
-            Model model
-    ) {
-        // 필터에서 토큰 검증을 이미 했기 때문에, userId가 null이면 = 인증 안 된 상태
-        if (userId == null) {
-            return "redirect:/user/login";
-        }
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-        model.addAttribute("loginUser", user);
-        return "user/me";
+        // 쿠키를 "즉시 만료"시켜서 브라우저가 지우게 만듦
+        ResponseCookie expiredCookie = ResponseCookie.from("accessToken", "")
+                .httpOnly(true)
+                .secure(false) // localhost 개발 환경
+                .path("/")
+                .maxAge(0)     // 0으로 주면 브라우저가 바로 삭제
+                .sameSite("Lax")
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, expiredCookie.toString());
+
+        return "redirect:/space/list";
     }
-
-
 
 }

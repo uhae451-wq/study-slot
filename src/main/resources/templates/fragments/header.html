@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<div th:fragment="header">
+  <header class="site-header">
+    <div class="header-inner">
+      <a href="/" class="brand">
+        <span class="brand-mark">◆</span>
+        <span class="brand-text">Study Slot</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="/space">공간 목록</a>
+      </nav>
+
+      <div class="auth-area">
+        <!-- 로그인 상태: loginUser가 있을 때 -->
+        <div th:if="${loginUser != null}" class="auth-user">
+          <span class="user-tag" th:text="${loginUser.nickname} + '님'">닉네임님</span>
+          <a href="/user/logout" class="btn-ghost">로그아웃</a>
+        </div>
+
+        <!-- 비로그인 상태: loginUser가 없을 때 -->
+        <div th:if="${loginUser == null}" class="auth-guest">
+          <a href="/user/login" class="btn-ghost" id="login-link">로그인</a>
+          <a href="/user/signup" class="btn-solid">회원가입</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <script>
+    const loginLink = document.getElementById('login-link');
+    if (loginLink) {
+      loginLink.href = '/user/login?redirect=' + encodeURIComponent(window.location.pathname);
+    }
+  </script>
+</div>
+
+</body>
+</html>

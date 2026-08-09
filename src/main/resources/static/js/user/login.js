@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const passwordInput = document.getElementById("password");
     const errorEl = document.getElementById("login-error");
     const submitBtn = document.getElementById("submit-btn");
+    const redirectInput = document.getElementById("redirect");
 
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -11,6 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const email = emailInput.value.trim();
         const password = passwordInput.value;
+        const redirect = redirectInput ? redirectInput.value : "";
 
         if (!email || !password) {
             errorEl.textContent = "이메일과 비밀번호를 모두 입력해주세요.";
@@ -20,8 +22,11 @@ document.addEventListener("DOMContentLoaded", () => {
         submitBtn.disabled = true;
         submitBtn.textContent = "로그인 중...";
 
+        // redirect 값이 있으면 쿼리 파라미터로 붙여서 서버에 전달
+        const url = "/user/login" + (redirect ? "?redirect=" + encodeURIComponent(redirect) : "");
+
         try {
-            const response = await fetch("/user/login", {
+            const response = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password })
@@ -35,11 +40,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-/*            // 로그인 성공 -> 토큰을 저장해두고 다음 요청부터 사용
-            localStorage.setItem("token", data.token);
-            localStorage.setItem("nickname", data.nickname);*/
+            /*            // 로그인 성공 -> 토큰을 저장해두고 다음 요청부터 사용
+                        localStorage.setItem("token", data.token);
+                        localStorage.setItem("nickname", data.nickname);*/
 
-            alert(`${data.nickname}님 환영합니다!`);
             window.location.href = data.redirectUrl;
 
         } catch (err) {
