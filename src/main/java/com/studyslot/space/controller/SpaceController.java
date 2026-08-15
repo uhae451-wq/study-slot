@@ -15,14 +15,12 @@ public class SpaceController {
 
     private final SpaceService spaceService;
 
-
     public SpaceController(SpaceService spaceService) {
         this.spaceService = spaceService;
     }
 
     @GetMapping("/list")
     public String SpaceFindall(Model model){
-
         return "/space/space-list";
     }
 }

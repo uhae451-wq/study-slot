@@ -1,7 +1,9 @@
 package com.studyslot.space.dto;
 
 import com.studyslot.space.entity.Space;
+import lombok.Getter;
 
+@Getter
 public class SpaceResponse {
 
     private final Long id;
@@ -23,13 +25,4 @@ public class SpaceResponse {
         this.longitude = space.getLongitude();
         this.placeUrl = space.getPlaceUrl();
     }
-
-    public Long getId() { return id; }
-    public String getName() { return name; }
-    public String getRoadAddress() { return roadAddress; }
-    public String getAddress() { return address; }
-    public String getPhone() { return phone; }
-    public Double getLatitude() { return latitude; }
-    public Double getLongitude() { return longitude; }
-    public String getPlaceUrl() { return placeUrl; }
 }

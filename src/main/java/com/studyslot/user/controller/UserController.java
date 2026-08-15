@@ -59,7 +59,7 @@ public class UserController {
             model.addAttribute("signupRequest",signupRequest);
             return "/user/signup";
         }
-        return "redirect:/user/signup";
+        return "redirect:/user/login";
     }
 
     @GetMapping("/login")
@@ -113,6 +113,26 @@ public class UserController {
                 "message", "회원정보가 수정되었습니다.",
                 "nickname", request.getNickname()
         ));
+    }
+
+    @PostMapping("/withdraw")
+    @ResponseBody
+    public ResponseEntity<?> userWithdraw(@AuthenticationPrincipal Long userId,HttpServletResponse response) {
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "로그인이 필요합니다."));
+        }
+        userService.withdraw(userId);
+        // 탈퇴 후 로그인 쿠키도 즉시 만료시켜서 로그아웃 처리
+        ResponseCookie expiredCookie = ResponseCookie.from("accessToken", "")
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Lax")
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, expiredCookie.toString());
+        return ResponseEntity.ok(Map.of("message", "탈퇴가 완료되었습니다."));
     }
 
 

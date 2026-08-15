@@ -21,13 +21,16 @@
         <div class="field">
             <label for="password">비밀번호</label>
             <input type="password" id="password" th:field="*{password}" placeholder="영문+숫자 8~20자" autocomplete="off">
+
+            <label for="password">2차 비밀번호</label>
+            <input type="password" id="new-password" placeholder="영문+숫자 8~20자" autocomplete="off">
             <ul class="requirement-list" id="password-requirements">
                 <li id="req-length" data-req="length">8~20자</li>
                 <li id="req-letter" data-req="letter">영문 포함</li>
                 <li id="req-number" data-req="number">숫자 포함</li>
             </ul>
         </div>
-
+        <p id="password-confirm-msg" class="validation-message"></p>
         <div class="field">
             <label for="nickname">닉네임</label>
             <input type="text" id="nickname" th:field="*{nickname}" placeholder="한글/영문/숫자 2~10자" autocomplete="off">
@@ -39,5 +42,7 @@
 </div>
 
 <script th:src="@{/js/user/signup.js}"></script>
+<script th:src="@{/js/user/password-validation.js}"></script>
+
 </body>
 </html>

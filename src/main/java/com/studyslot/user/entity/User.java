@@ -25,7 +25,7 @@ public class User {
     private String nickname;
 
     @Column(nullable = false)
-    private boolean useTrue;
+    private boolean enabled = true;
 
     private LocalDateTime createdAt;
 
@@ -38,13 +38,13 @@ public class User {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
+        this.enabled = true;
     }
 
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
-        useTrue = true;
     }
 
     @PreUpdate
@@ -61,6 +61,7 @@ public class User {
                 ", nickname='" + nickname + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
+                ", enabled=" + enabled +
                 '}';
     }
 
@@ -70,5 +71,13 @@ public class User {
 
     public void changeNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public void withdraw() {
+        this.enabled = false;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 }

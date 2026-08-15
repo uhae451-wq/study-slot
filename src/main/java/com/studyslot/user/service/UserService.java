@@ -47,6 +47,8 @@ public class UserService {
             throw new IllegalAccessError("이미 사용 중인 닉네임이에요.");
         }
 
+
+
         String encodeedPassword = passwordEncoder.encode(request.getPassword());
 
         User user = new User(
@@ -64,6 +66,10 @@ public class UserService {
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않아요."));
+
+        if (!user.isEnabled()) {
+            throw new IllegalArgumentException("사용자를 찾을 수 없습니다.");
+        }
 
         // matches()로 입력한 평문과 DB의 해시값을 비교
         // (일부러 "이메일이 없다"와 "비밀번호가 틀렸다"를 구분 안 하고 같은 메시지로 처리 -> 계정 존재 여부 노출 방지)
@@ -116,13 +122,13 @@ public class UserService {
         }
     }
 
+    // 회원 탈퇴 (소프트 삭제)
     @Transactional
-    public void changePassword(Long userId, String newPassword) {
+    public void withdraw(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-        String encodedPassword = passwordEncoder.encode(newPassword);
 
-        user.changePassword(encodedPassword);
+        user.withdraw();
     }
 
 }

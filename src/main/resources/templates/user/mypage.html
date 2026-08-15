@@ -5,83 +5,27 @@
   <title>내 정보 - StudySlot</title>
   <link rel="stylesheet" th:href="@{/css/header.css}">
   <link rel="stylesheet" th:href="@{/css/user/mypage.css}">
+  <script th:src="@{/js/common/password-validation.js}"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
 
       const nicknameInput = document.getElementById("nickname");
       const passwordInput = document.getElementById("new-password");
       const passwordConfirmInput = document.getElementById("new-password-confirm");
+      const passwordConfirmMsg = document.getElementById("password-confirm-msg");
 
-      const passwordError = document.createElement("p");
-      const passwordConfirmError = document.createElement("p");
-
-      passwordError.className = "validation-message";
-      passwordConfirmError.className = "validation-message";
-
-      passwordInput.parentElement.appendChild(passwordError);
-      passwordConfirmInput.parentElement.appendChild(passwordConfirmError);
-
-
-      // 비밀번호 유효성 검사
-      function validatePassword(password) {
-        const passwordRegex = {
-          length: /^.{8,20}$/,
-          letter: /[a-zA-Z]/,
-          number: /[0-9]/
-        };
-
-        return (
-                passwordRegex.length.test(password) &&
-                passwordRegex.letter.test(password) &&
-                passwordRegex.number.test(password)
-        );
-      }
-
-
-      // 비밀번호 입력 시
+      // 비밀번호 입력 시 실시간 조건 체크
       passwordInput.addEventListener("input", () => {
-        const password = passwordInput.value;
-
-        if (!password) {
-          passwordError.textContent = "";
-          return;
-        }
-
-        if (!validatePassword(password)) {
-          passwordError.textContent =
-                  "비밀번호는 영문과 숫자를 포함한 8~20자로 입력해주세요.";
-        } else {
-          passwordError.textContent = "";
-        }
+        checkPasswordRequirements(passwordInput.value);
 
         if (passwordConfirmInput.value) {
-          checkPasswordConfirm();
+          checkPasswordMatch(passwordInput, passwordConfirmInput, passwordConfirmMsg);
         }
       });
 
-
-      // 비밀번호 확인 검사
-      function checkPasswordConfirm() {
-        const password = passwordInput.value;
-        const passwordConfirm = passwordConfirmInput.value;
-
-        if (!passwordConfirm) {
-          passwordConfirmError.textContent = "";
-          return false;
-        }
-
-        if (password !== passwordConfirm) {
-          passwordConfirmError.textContent = "비밀번호가 일치하지 않습니다.";
-          return false;
-        }
-
-        passwordConfirmError.textContent = "";
-        return true;
-      }
-
-
+      // 비밀번호 확인 입력 시 실시간 일치 체크
       passwordConfirmInput.addEventListener("input", () => {
-        checkPasswordConfirm();
+        checkPasswordMatch(passwordInput, passwordConfirmInput, passwordConfirmMsg);
       });
 
 
@@ -99,14 +43,17 @@
           return;
         }
 
-        // 비밀번호를 입력한 경우에만 프론트에서 미리 체크
+        // 비밀번호를 입력한 경우에만 검증
         if (newPassword || newPasswordConfirm) {
-          if (!validatePassword(newPassword)) {
+          const requirementsOk = checkPasswordRequirements(newPassword);
+          if (!requirementsOk) {
             messageEl.textContent = "비밀번호는 영문과 숫자를 포함한 8~20자로 입력해주세요.";
             messageEl.style.color = "#A3402F";
             return;
           }
-          if (!checkPasswordConfirm()) {
+
+          const matchOk = checkPasswordMatch(passwordInput, passwordConfirmInput, passwordConfirmMsg);
+          if (!matchOk) {
             messageEl.textContent = "비밀번호가 일치하지 않습니다.";
             messageEl.style.color = "#A3402F";
             return;
@@ -132,17 +79,39 @@
           messageEl.textContent = "";
           passwordInput.value = "";
           passwordConfirmInput.value = "";
-          // 헤더 닉네임/아바타 즉시 갱신 (서버가 저장한 값 기준)
+          passwordConfirmMsg.textContent = "";
+
           document.querySelector(".profile-info h2").textContent = data.nickname;
           document.querySelector(".avatar").textContent = data.nickname.charAt(0);
-          // 헤더 닉네임도 갱신 (헤더에 표시되는 경우)
+
           const headerNickname = document.getElementById("header-nickname");
           if (headerNickname) {
-            headerNickname.textContent = data.nickname+"님";
+            headerNickname.textContent = data.nickname + "님";
           }
         } catch (err) {
           messageEl.textContent = "요청 중 오류가 발생했습니다.";
           messageEl.style.color = "#A3402F";
+        }
+      });
+
+      document.getElementById("withdraw-btn").addEventListener("click", async () => {
+        const confirmed = confirm("정말 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.");
+        if (!confirmed) return;
+
+        try {
+          const response = await fetch("/user/withdraw", { method: "POST" });
+          const data = await response.json();
+
+          if (!response.ok) {
+            alert(data.message);
+            return;
+          }
+
+          alert(data.message);
+          location.href = "/space/list";
+
+        } catch (err) {
+          alert("요청 중 오류가 발생했습니다.");
         }
       });
 
@@ -206,6 +175,11 @@
                 id="new-password"
                 name="newPassword"
                 placeholder="변경하지 않으려면 비워두세요">
+        <ul class="password-requirements">
+          <li id="req-length">8~20자</li>
+          <li id="req-letter">영문 포함</li>
+          <li id="req-number">숫자 포함</li>
+        </ul>
       </div>
 
       <div class="field">
@@ -215,16 +189,15 @@
                 id="new-password-confirm"
                 name="newPasswordConfirm"
                 placeholder="새 비밀번호를 다시 입력해주세요">
+        <p id="password-confirm-msg" class="validation-message"></p>
       </div>
-      <p id="edit-message" class="validation-message"></p>
     </div>
-
     <div class="button-section">
       <button type="button" id="edit-password-btn" class="btn btn-primary">
         회원정보 수정
       </button>
 
-      <button type="button" class="btn btn-danger">
+      <button type="button" id="withdraw-btn" class="btn btn-danger">
         회원탈퇴
       </button>
     </div>

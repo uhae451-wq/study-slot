@@ -21,4 +21,14 @@ public class SpaceService {
         return spaceRepository.findAll();
     }
 
+    // space 검색
+    public List<Space> search(String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            return findAll();
+        }
+        return spaceRepository.findByNameContainingOrAddressContainingOrRoadAddressContaining(
+                keyword, keyword, keyword
+        );
+    }
+
 }

@@ -1,0 +1,202 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Mono:wght@400;500&family=Pretendard:wght@400;500;600&display=swap');
+
+:root {
+    --paper: #F3EFE6;
+    --ink: #26241E;
+    --ink-soft: #6B6759;
+    --rule: #D8D2C2;
+    --stamp: #A3402F;
+    --stamp-soft: #E9DCCF;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Pretendard', sans-serif;
+}
+
+.reservation-wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+}
+
+/* 상단 헤더 영역 */
+.page-header {
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 20px;
+    margin-bottom: 32px;
+}
+
+.eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    color: var(--stamp);
+    text-transform: uppercase;
+    margin: 0 0 8px;
+}
+
+h1 {
+    font-family: 'Source Serif 4', serif;
+    font-weight: 600;
+    font-size: 32px;
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+.space-meta {
+    margin-top: 10px;
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+}
+
+.space-meta .phone {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+}
+
+/* 공용 카드 스타일 */
+.card {
+    background: #FBF9F4;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 28px 24px;
+    position: relative;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 24px;
+    width: 34px; height: 8px;
+    background: var(--stamp-soft);
+    border-radius: 0 0 3px 3px;
+}
+
+.card-index {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    letter-spacing: 0.05em;
+    margin-bottom: 18px;
+}
+
+.section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--stamp);
+    margin-bottom: 16px;
+}
+
+/* 날짜 탭 */
+.date-tabs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    margin-bottom: 28px;
+}
+
+.date-tabs::-webkit-scrollbar {
+    height: 4px;
+}
+
+.date-tabs::-webkit-scrollbar-thumb {
+    background: var(--rule);
+}
+
+.date-tab {
+    flex-shrink: 0;
+    display: block;
+    text-align: center;
+    min-width: 68px;
+    padding: 10px 14px;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    background: var(--paper);
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    letter-spacing: 0.02em;
+    transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+    white-space: nowrap;
+}
+
+.date-tab:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+}
+
+.date-tab.active {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+}
+
+/* 슬롯 그리드 */
+.slot-section {
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+}
+
+.slot-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
+    gap: 10px;
+}
+
+.slot-btn {
+    height: 46px;
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.slot-btn:hover {
+    border-color: var(--ink);
+    background: var(--stamp-soft);
+}
+
+.slot-btn:active {
+    background: var(--ink);
+    color: var(--paper);
+}
+
+.slot-btn.disabled {
+    background: var(--rule);
+    color: var(--ink-soft);
+    cursor: not-allowed;
+    border-color: var(--rule);
+}
+
+.slot-btn.disabled:hover {
+    background: var(--rule);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: var(--ink-soft);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    border: 1px dashed var(--rule);
+}
+
+@media (max-width: 480px) {
+    h1 { font-size: 26px; }
+    .reservation-wrap { padding: 32px 16px 60px; }
+    .slot-grid { grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); }
+}

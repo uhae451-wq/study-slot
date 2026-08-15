@@ -214,3 +214,36 @@ h1 {
     color: var(--ink-soft);
     cursor: not-allowed;
 }
+
+.password-requirements {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0 0;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.password-requirements li {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-soft);
+    padding: 3px 8px;
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+
+.password-requirements li.satisfied {
+    color: #2E7D32;
+    border-color: #2E7D32;
+    background: #EAF5EA;
+}
+
+.validation-message.valid {
+    color: #2E7D32;
+}
+
+.validation-message.invalid {
+    color: var(--stamp);
+}

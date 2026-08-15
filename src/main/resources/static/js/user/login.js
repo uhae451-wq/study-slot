@@ -6,6 +6,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const submitBtn = document.getElementById("submit-btn");
     const redirectInput = document.getElementById("redirect");
 
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('needSignup') === 'true') {
+        alert('회원가입(로그인)이 필요합니다.');
+    }
+
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
         errorEl.textContent = "";
